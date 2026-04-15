@@ -2,6 +2,15 @@ import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import type { Database } from "@/lib/database.types";
 
+function hardenCookieOptions(options: CookieOptions): CookieOptions {
+  return {
+    ...options,
+    httpOnly: true,
+    sameSite: options.sameSite ?? "lax",
+    secure: process.env.NODE_ENV === "production",
+  };
+}
+
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });
 
@@ -21,7 +30,7 @@ export async function updateSession(request: NextRequest) {
           );
           response = NextResponse.next({ request });
           cookiesToSet.forEach(({ name, value, options }) =>
-            response.cookies.set(name, value, options),
+            response.cookies.set(name, value, hardenCookieOptions(options)),
           );
         },
       },

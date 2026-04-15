@@ -24,6 +24,8 @@ export function SearchInput({
   const [value, setValue] = useState(initial);
 
   useEffect(() => {
+    // Sync local state when the URL changes externally (e.g. browser back).
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setValue(searchParams.get(paramName) ?? "");
   }, [searchParams, paramName]);
 

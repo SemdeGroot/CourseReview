@@ -129,9 +129,12 @@ from public.reviews;
 grant select on public.courses_with_stats to anon, authenticated;
 grant select on public.reviews_public to anon, authenticated;
 
--- Harden the views so the caller's RLS applies (not the view owner's).
-alter view public.courses_with_stats set (security_invoker = on);
-alter view public.reviews_public set (security_invoker = on);
+-- Views run with their owner's privileges so anon can read aggregated stats
+-- and the sanitised review columns even though the base reviews table denies
+-- anon SELECTs. Privacy is enforced by the explicit column list of each view
+-- (author_id is never exposed).
+alter view public.courses_with_stats set (security_invoker = off);
+alter view public.reviews_public set (security_invoker = off);
 
 -- ============================================================================
 -- Row Level Security
