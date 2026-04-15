@@ -1,0 +1,95 @@
+@import "tailwindcss";
+
+/*
+ * CourseReview — Leiden University MSc CS review platform
+ * Palette: Leiden navy #001158 (primary), Leiden orange #F46E32 (accent),
+ * soft neutrals for background and borders. Light mode only for v1.
+ * Tailwind v4 uses color values directly (not HSL triplets).
+ */
+
+:root {
+  --background: #ffffff;
+  --foreground: #0c1229;
+
+  --card: #ffffff;
+  --card-foreground: #0c1229;
+
+  --popover: #ffffff;
+  --popover-foreground: #0c1229;
+
+  --primary: #001158;
+  --primary-foreground: #ffffff;
+
+  --secondary: #f5f6f8;
+  --secondary-foreground: #0c1229;
+
+  --muted: #f5f6f8;
+  --muted-foreground: #64748b;
+
+  --accent: #f46e32;
+  --accent-foreground: #ffffff;
+
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+
+  --border: #e5e7eb;
+  --input: #e5e7eb;
+  --ring: #0c2577;
+
+  --radius: 0.625rem;
+
+  --leiden-navy: #001158;
+  --leiden-navy-hover: #0c2577;
+  --leiden-orange: #f46e32;
+  --leiden-surface: #f5f6f8;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-leiden-navy: var(--leiden-navy);
+  --color-leiden-navy-hover: var(--leiden-navy-hover);
+  --color-leiden-orange: var(--leiden-orange);
+  --color-leiden-surface: var(--leiden-surface);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-bitter);
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  h1, h2, h3 {
+    font-family: var(--font-bitter), Georgia, serif;
+    letter-spacing: -0.01em;
+  }
+}
