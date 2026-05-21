@@ -49,7 +49,7 @@ Thumbs.db
 # Coverage
 coverage/
 
-# Python (used only for virtualenv-based tooling, not part of the app)
+# Python (used only for virtualenv-based tooling)
 venv/
 .venv/
 __pycache__/
