@@ -1,5 +1,5 @@
 """
-Local dev runner for CourseReview.
+Local dev runner for LeidenCS.
 
 Starts Supabase (local Docker stack) and the Next.js dev server together,
 streams their output with a prefix, and shuts both down cleanly on Ctrl+C.
@@ -121,7 +121,7 @@ def shutdown(next_proc: subprocess.Popen | None, stop_supabase: bool) -> None:
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="CourseReview local dev runner")
+    parser = argparse.ArgumentParser(description="LeidenCS local dev runner")
     parser.add_argument("--reset", action="store_true", help="Reset local DB before starting Next.js")
     parser.add_argument("--no-supabase", action="store_true", help="Do not start Supabase (assume already running)")
     parser.add_argument("--no-next", action="store_true", help="Do not start Next.js (Supabase only)")

@@ -2,7 +2,7 @@ import { Info } from "lucide-react";
 
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
-export const metadata = { title: "Admin · Admins" };
+export const metadata = { title: "Admin: Admins" };
 
 export default async function AdminAdminsPage() {
   const supabase = await createSupabaseServerClient();

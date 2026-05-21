@@ -17,7 +17,10 @@ const bitter = Bitter({
 });
 
 export const metadata: Metadata = {
-  title: "CourseReview — Leiden MSc Computer Science",
+  title: {
+    default: "LeidenCS - Course Reviews",
+    template: "%s | LeidenCS",
+  },
   description:
     "Honest, anonymous reviews of MSc Computer Science courses at Leiden University. Find out what a course is really like before you enroll.",
 };
@@ -31,6 +34,7 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${inter.variable} ${bitter.variable} h-full antialiased`}
+      data-scroll-behavior="smooth"
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
         {children}

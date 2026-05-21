@@ -35,20 +35,20 @@ export function ReviewCard({ review }: { review: ReviewCardData }) {
       </p>
       <dl className="mt-4 grid grid-cols-2 gap-3 border-t border-border pt-3 text-xs sm:grid-cols-3">
         <div>
-          <dt className="text-[10px] uppercase tracking-wide text-muted-foreground">Difficulty</dt>
+          <dt className="text-[11px] uppercase tracking-wide text-muted-foreground">Difficulty</dt>
           <dd className="mt-0.5 font-medium tabular-nums text-foreground">
             {review.difficulty.toFixed(1)} <span className="text-muted-foreground">/ 5</span>
           </dd>
         </div>
         <div>
-          <dt className="text-[10px] uppercase tracking-wide text-muted-foreground">Workload</dt>
+          <dt className="text-[11px] uppercase tracking-wide text-muted-foreground">Workload</dt>
           <dd className="mt-0.5 font-medium tabular-nums text-foreground">
             {review.workload_hours}
             <span className="text-muted-foreground"> h/wk</span>
           </dd>
         </div>
         <div>
-          <dt className="text-[10px] uppercase tracking-wide text-muted-foreground">Rating</dt>
+          <dt className="text-[11px] uppercase tracking-wide text-muted-foreground">Rating</dt>
           <dd className="mt-0.5 font-medium tabular-nums text-foreground">
             {review.rating.toFixed(1)} <span className="text-muted-foreground">/ 5</span>
           </dd>

@@ -23,8 +23,8 @@ function HeroSection() {
           Choose courses with context from students who took them.
         </h1>
         <p className="animate-fade-up-d1 mt-5 max-w-xl text-lg leading-relaxed text-muted-foreground">
-          CourseReview collects anonymous student reviews for the Leiden MSc Computer Science
-          curriculum, including difficulty, workload, and programme relevance.
+          LeidenCS collects anonymous student reviews for the Leiden MSc Computer Science
+          curriculum, including difficulty, workload, and rating.
         </p>
         <div className="animate-fade-up-d2 mt-8 flex flex-wrap items-center gap-3">
           <Button

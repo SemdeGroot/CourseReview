@@ -7,7 +7,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
-export const metadata = { title: "Admin · CourseReview" };
+export const metadata = { title: "Admin" };
 
 export default async function AdminLoginPage() {
   const supabase = await createSupabaseServerClient();
@@ -34,7 +34,7 @@ export default async function AdminLoginPage() {
           >
             <GraduationCap size={18} />
           </span>
-          CourseReview
+          LeidenCS
         </Link>
       </header>
       <main className="flex flex-1 items-start justify-center px-4 pb-16">

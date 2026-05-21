@@ -7,7 +7,7 @@ import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { deleteReviewAction } from "@/server-actions/admin";
 
-export const metadata = { title: "Admin · Reviews" };
+export const metadata = { title: "Admin: Reviews" };
 
 const DATE_FMT = new Intl.DateTimeFormat("en-GB", {
   year: "numeric",
@@ -109,7 +109,7 @@ export default async function AdminReviewsPage() {
               </p>
               <dl className="mt-4 flex gap-5 border-t border-border pt-3 text-xs">
                 <div>
-                  <dt className="text-[10px] uppercase tracking-wide text-muted-foreground">
+                  <dt className="text-[11px] uppercase tracking-wide text-muted-foreground">
                     Difficulty
                   </dt>
                   <dd className="mt-0.5 font-medium tabular-nums">
@@ -117,7 +117,7 @@ export default async function AdminReviewsPage() {
                   </dd>
                 </div>
                 <div>
-                  <dt className="text-[10px] uppercase tracking-wide text-muted-foreground">
+                  <dt className="text-[11px] uppercase tracking-wide text-muted-foreground">
                     Workload
                   </dt>
                   <dd className="mt-0.5 font-medium tabular-nums">

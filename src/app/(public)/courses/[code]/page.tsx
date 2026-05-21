@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: { params: RouteParams }) {
     .maybeSingle();
   if (!data) return { title: "Course not found" };
   return {
-    title: `${data.title} (${data.code}) · CourseReview`,
+    title: `${data.title} (${data.code})`,
   };
 }
 

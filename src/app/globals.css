@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /*
- * CourseReview — Leiden University MSc CS review platform
+ * LeidenCS: Leiden University MSc CS review platform
  * Palette: Leiden navy #001158 (primary), Leiden orange #F46E32 (accent),
  * soft neutrals for background and borders. Light mode only for v1.
  * Tailwind v4 uses color values directly (not HSL triplets).
@@ -157,6 +157,7 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    font-size: 106.25%;
   }
 
   [id] {

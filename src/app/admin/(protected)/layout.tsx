@@ -42,7 +42,7 @@ export default async function ProtectedAdminLayout({
             </span>
             Admin
             <span className="ml-2 hidden text-xs font-normal text-muted-foreground sm:inline">
-              CourseReview
+              LeidenCS
             </span>
           </Link>
           <div className="flex items-center gap-2">

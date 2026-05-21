@@ -146,16 +146,15 @@ function MobileCards({ courses, animated = false, listKey = 0 }: Props) {
   return (
     <div className="space-y-3 md:hidden">
       {courses.map((course) => (
-        <Link
+        <article
           key={`${listKey}-${course.id}`}
-          href={`/courses/${course.code}`}
           className={cn(
-            "block rounded-lg border border-border bg-card p-4 shadow-sm transition-colors",
+            "rounded-lg border border-border bg-card p-4 shadow-sm transition-colors",
             "hover:border-primary/30 hover:bg-secondary/30",
             animated && "animate-fade-up",
           )}
         >
-          <div className="flex items-start gap-3">
+          <Link href={`/courses/${course.code}`} className="flex items-start gap-3">
             <span
               className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-md text-white"
               style={{ backgroundColor: course.color }}
@@ -177,32 +176,32 @@ function MobileCards({ courses, animated = false, listKey = 0 }: Props) {
                 ))}
               </div>
             </div>
-          </div>
+          </Link>
           <dl className="mt-3 grid grid-cols-4 gap-2 border-t border-border pt-3 text-xs">
             <div>
-              <dt className="text-[10px] uppercase tracking-wide text-muted-foreground">Rating</dt>
+              <dt className="text-[11px] uppercase tracking-wide text-muted-foreground">Rating</dt>
               <dd className="mt-0.5">
                 <Rating value={course.avg_rating} size="sm" />
               </dd>
             </div>
             <div>
-              <dt className="text-[10px] uppercase tracking-wide text-muted-foreground">Diff.</dt>
+              <dt className="text-[11px] uppercase tracking-wide text-muted-foreground">Diff.</dt>
               <dd className="mt-0.5 font-medium tabular-nums">
                 {course.avg_difficulty ? course.avg_difficulty.toFixed(1) : "-"}
               </dd>
             </div>
             <div>
-              <dt className="text-[10px] uppercase tracking-wide text-muted-foreground">Work</dt>
+              <dt className="text-[11px] uppercase tracking-wide text-muted-foreground">Work</dt>
               <dd className="mt-0.5 font-medium tabular-nums">
                 {course.avg_workload ? `${course.avg_workload.toFixed(1)}h` : "-"}
               </dd>
             </div>
             <div>
-              <dt className="text-[10px] uppercase tracking-wide text-muted-foreground">Reviews</dt>
+              <dt className="text-[11px] uppercase tracking-wide text-muted-foreground">Reviews</dt>
               <dd className="mt-0.5 font-medium tabular-nums">{course.review_count}</dd>
             </div>
           </dl>
-        </Link>
+        </article>
       ))}
     </div>
   );

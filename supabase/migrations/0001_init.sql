@@ -1,4 +1,4 @@
--- Initial schema for CourseReview.
+-- Initial schema for LeidenCS.
 -- Creates tables, constraints, triggers, views, RLS policies, and the
 -- is_admin() helper. Run with `npx supabase db reset` (local) or
 -- `npx supabase db push` (remote).

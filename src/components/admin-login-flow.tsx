@@ -25,20 +25,20 @@ type Stage = "email" | "code";
 export function AdminLoginFlow() {
   const router = useRouter();
   const [stage, setStage] = useState<Stage>("email");
-  const [email, setEmail] = useState("");
+  const [emailPrefix, setEmailPrefix] = useState("");
   const [code, setCode] = useState("");
   const [pending, startTransition] = useTransition();
 
   function onSendCode(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const normalised = email.trim().toLowerCase();
-    if (!normalised.endsWith(ALLOWED_DOMAIN)) {
-      toast.error(`Only ${ALLOWED_DOMAIN} addresses are allowed.`);
+    const prefix = emailPrefix.trim().toLowerCase();
+    if (!prefix) {
+      toast.error("Please enter your name part of the email.");
       return;
     }
-    setEmail(normalised);
+    const fullEmail = `${prefix}${ALLOWED_DOMAIN}`;
     startTransition(async () => {
-      const res = await requestOtpAction(normalised);
+      const res = await requestOtpAction(fullEmail);
       if (!res.ok) {
         toast.error(res.error);
         return;
@@ -55,8 +55,9 @@ export function AdminLoginFlow() {
       toast.error("Enter the 6-digit code from your email.");
       return;
     }
+    const fullEmail = `${emailPrefix.trim().toLowerCase()}${ALLOWED_DOMAIN}`;
     startTransition(async () => {
-      const res = await verifyAdminOtpAction(email, token);
+      const res = await verifyAdminOtpAction(fullEmail, token);
       if (!res.ok) {
         toast.error(res.error);
         return;
@@ -76,7 +77,7 @@ export function AdminLoginFlow() {
         <CardDescription>
           {stage === "email"
             ? "Verify your Leiden email to continue."
-            : `We emailed a 6-digit code to ${email}.`}
+            : `We emailed a 6-digit code to ${emailPrefix.trim().toLowerCase()}${ALLOWED_DOMAIN}.`}
         </CardDescription>
       </CardHeader>
 
@@ -84,16 +85,22 @@ export function AdminLoginFlow() {
         <form onSubmit={onSendCode}>
           <CardContent className="space-y-2">
             <Label htmlFor="email">Leiden email</Label>
-            <Input
-              id="email"
-              type="email"
-              autoComplete="email"
-              required
-              placeholder={`yourname${ALLOWED_DOMAIN}`}
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              disabled={pending}
-            />
+            <div className="flex items-center overflow-hidden rounded-md border border-input bg-background focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50 shadow-xs transition-shadow">
+              <input
+                id="email"
+                type="text"
+                autoComplete="username"
+                required
+                placeholder="e.g. s1234567"
+                value={emailPrefix}
+                onChange={(e) => setEmailPrefix(e.target.value)}
+                disabled={pending}
+                className="flex-1 bg-transparent px-3 py-2 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50"
+              />
+              <span className="pointer-events-none select-none border-l border-input bg-muted px-3 py-2 text-sm text-muted-foreground font-mono">
+                {ALLOWED_DOMAIN}
+              </span>
+            </div>
           </CardContent>
           <CardFooter className="mt-5">
             <Button type="submit" className="w-full" disabled={pending}>

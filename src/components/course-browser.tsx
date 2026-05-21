@@ -13,8 +13,8 @@ import {
 } from "@/lib/sort";
 import { cn } from "@/lib/utils";
 
-const INITIAL_VISIBLE_COURSES = 50;
-const VISIBLE_COURSE_INCREMENT = 50;
+const INITIAL_VISIBLE_COURSES = 20;
+const VISIBLE_COURSE_INCREMENT = 20;
 
 type Props = {
   courses: CourseListItem[];
@@ -98,6 +98,7 @@ export function CourseBrowser({ courses }: Props) {
               type="button"
               variant="outline"
               size="sm"
+              className="hover:bg-secondary hover:text-foreground"
               onClick={() => setVisibleCount((current) => current + VISIBLE_COURSE_INCREMENT)}
             >
               Show more

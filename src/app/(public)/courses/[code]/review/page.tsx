@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: RouteParams }) {
   const { code } = await params;
-  return { title: `Review ${code} · CourseReview` };
+  return { title: `Review ${code}` };
 }
 
 export default async function AddReviewPage({ params }: { params: RouteParams }) {

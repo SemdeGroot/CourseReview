@@ -300,7 +300,7 @@ def fetch_or_read(url: str, cache_path: Path, use_cache: bool) -> str:
         return cache_path.read_text(encoding="utf-8")
 
     cache_path.parent.mkdir(parents=True, exist_ok=True)
-    request = urllib.request.Request(url, headers={"User-Agent": "CourseReview scraper"})
+    request = urllib.request.Request(url, headers={"User-Agent": "LeidenCS scraper"})
     try:
         with urllib.request.urlopen(request, timeout=30) as response:
             body = response.read().decode("utf-8")
@@ -356,7 +356,7 @@ def sql_string(value: str) -> str:
 
 def build_seed(courses: list[CourseDetail]) -> str:
     lines = [
-        "-- Seed data for CourseReview.",
+        "-- Seed data for LeidenCS.",
         "-- Generated from the Leiden University study guide 2025-2026.",
         "-- Run `python3 scripts/scrape_studiegids.py --refresh` to update from source pages.",
         "",

@@ -1,6 +1,6 @@
-# CourseReview
+# LeidenCS
 
-Anonymous course reviews for the MSc Computer Science programme at Universiteit Leiden. Next.js + Supabase + Netlify.
+Anonymous course reviews for the MSc Computer Science programme at Universiteit Leiden. Next.js: Supabase: Netlify.
 
 ## Requirements
 
@@ -30,6 +30,7 @@ npm run lint                    # ESLint
 npm run typecheck               # tsc --noEmit
 npm run db:reset                # wipe local DB and re-apply migrations + seed
 npm run db:types                # regenerate src/lib/database.types.ts
+SUPABASE_DB_URL="postgresql://..." npm run db:seed:remote
 python run_dev.py --reset       # run_dev.py with db reset first
 python run_dev.py --stop        # stop the Supabase Docker stack
 python3 scripts/scrape_studiegids.py --refresh  # update seed data from Studiegids
@@ -69,7 +70,7 @@ npm run db:push
    connection string from Supabase Dashboard > Project Settings > Database:
 
 ```bash
-psql "postgresql://..." -f supabase/seed.sql
+SUPABASE_DB_URL="postgresql://..." npm run db:seed:remote
 ```
 
 Set production env vars from Supabase dashboard API settings:
@@ -78,7 +79,7 @@ Set production env vars from Supabase dashboard API settings:
 NEXT_PUBLIC_SUPABASE_URL=https://wkniscqdzpjmhnwjijmw.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=...
 SUPABASE_SERVICE_ROLE_KEY=...
-NEXT_PUBLIC_SITE_URL=https://your-domain.example
+NEXT_PUBLIC_SITE_URL=https://www.leidencs.nl
 ```
 
 In Supabase Auth, configure URL settings:

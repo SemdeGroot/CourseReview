@@ -1,5 +1,5 @@
 {
-  "name": "course-review",
+  "name": "leidencs",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit",
     "db:reset": "supabase db reset",
     "db:push": "supabase db push",
-    "db:types": "supabase gen types typescript --local > src/lib/database.types.ts"
+    "db:types": "supabase gen types typescript --local > src/lib/database.types.ts",
+    "db:seed:remote": "psql \"$SUPABASE_DB_URL\" -f supabase/seed.sql"
   },
   "dependencies": {
     "@supabase/ssr": "^0.10.2",

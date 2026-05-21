@@ -17,10 +17,11 @@ export function SiteHeader() {
           >
             <GraduationCap size={18} />
           </span>
-          <span className="text-base">
-            CourseReview
-            <span className="ml-2 hidden text-xs font-normal text-muted-foreground sm:inline">
-              Leiden MSc CS
+          <span className="text-base flex items-baseline gap-2">
+            <span className="sm:hidden">LeidenCS MSCS Reviews</span>
+            <span className="hidden sm:inline">LeidenCS</span>
+            <span className="hidden sm:inline text-xs font-normal text-muted-foreground">
+              MSc Computer Science Reviews
             </span>
           </span>
         </Link>
@@ -29,7 +30,7 @@ export function SiteHeader() {
           size="sm"
           className="bg-accent text-accent-foreground hover:bg-accent/90"
         >
-          <Link href="#courses">Browse courses</Link>
+          <Link href="/#courses">Browse courses</Link>
         </Button>
       </div>
     </header>

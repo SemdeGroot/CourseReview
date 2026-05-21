@@ -11,7 +11,7 @@ import {
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { deleteCourseAction } from "@/server-actions/admin";
 
-export const metadata = { title: "Admin · Courses" };
+export const metadata = { title: "Admin: Courses" };
 
 export default async function AdminCoursesPage() {
   const supabase = await createSupabaseServerClient();

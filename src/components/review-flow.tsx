@@ -34,7 +34,7 @@ type Props = {
 export function ReviewFlow({ course, initialEmail }: Props) {
   const router = useRouter();
   const [stage, setStage] = useState<Stage>(initialEmail ? "form" : "email");
-  const [email, setEmail] = useState(initialEmail ?? "");
+  const [emailPrefix, setEmailPrefix] = useState(initialEmail?.split("@")[0] ?? "");
   const [code, setCode] = useState("");
 
   const [title, setTitle] = useState("");
@@ -47,14 +47,14 @@ export function ReviewFlow({ course, initialEmail }: Props) {
 
   function onSendCode(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const normalised = email.trim().toLowerCase();
-    if (!normalised.endsWith(ALLOWED_DOMAIN)) {
-      toast.error(`Only ${ALLOWED_DOMAIN} addresses are allowed.`);
+    const prefix = emailPrefix.trim().toLowerCase();
+    if (!prefix) {
+      toast.error("Please enter your name part of the email.");
       return;
     }
-    setEmail(normalised);
+    const fullEmail = `${prefix}${ALLOWED_DOMAIN}`;
     startTransition(async () => {
-      const res = await requestOtpAction(normalised);
+      const res = await requestOtpAction(fullEmail);
       if (!res.ok) {
         toast.error(res.error);
         return;
@@ -71,8 +71,9 @@ export function ReviewFlow({ course, initialEmail }: Props) {
       toast.error("Enter the 6-digit code from your email.");
       return;
     }
+    const fullEmail = `${emailPrefix.trim().toLowerCase()}${ALLOWED_DOMAIN}`;
     startTransition(async () => {
-      const res = await verifyOtpAction(email, token);
+      const res = await verifyOtpAction(fullEmail, token);
       if (!res.ok) {
         toast.error(res.error);
         return;
@@ -120,18 +121,24 @@ export function ReviewFlow({ course, initialEmail }: Props) {
         <form onSubmit={onSendCode}>
           <CardContent className="space-y-2">
             <Label htmlFor="email">Leiden email</Label>
-            <Input
-              id="email"
-              type="email"
-              autoComplete="email"
-              required
-              placeholder={`yourname${ALLOWED_DOMAIN}`}
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              disabled={pending}
-            />
+            <div className="flex items-center overflow-hidden rounded-md border border-input bg-background focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50 shadow-xs transition-shadow">
+              <input
+                id="email"
+                type="text"
+                autoComplete="username"
+                required
+                placeholder="e.g. s1234567"
+                value={emailPrefix}
+                onChange={(e) => setEmailPrefix(e.target.value)}
+                disabled={pending}
+                className="flex-1 bg-transparent px-3 py-2 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50"
+              />
+              <span className="pointer-events-none select-none border-l border-input bg-muted px-3 py-2 text-sm text-muted-foreground font-mono">
+                {ALLOWED_DOMAIN}
+              </span>
+            </div>
             <p className="text-xs text-muted-foreground">
-              Restricted to <span className="font-mono">{ALLOWED_DOMAIN}</span>.
+              Enter your student number or username.
             </p>
           </CardContent>
           <CardFooter className="mt-5">
@@ -145,13 +152,14 @@ export function ReviewFlow({ course, initialEmail }: Props) {
   }
 
   if (stage === "code") {
+    const fullEmail = `${emailPrefix.trim().toLowerCase()}${ALLOWED_DOMAIN}`;
     return (
       <Card className="shadow-sm">
         <CardHeader>
           <CardTitle className="text-2xl">Enter code</CardTitle>
           <CardDescription>
             We emailed a 6-digit code to{" "}
-            <span className="font-medium text-foreground">{email}</span>.
+            <span className="font-medium text-foreground">{fullEmail}</span>.
           </CardDescription>
         </CardHeader>
         <form onSubmit={onVerifyCode}>
@@ -205,7 +213,7 @@ export function ReviewFlow({ course, initialEmail }: Props) {
               <span className="font-mono text-xs">{course.code}</span>
             </CardDescription>
           </div>
-          <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-border bg-secondary px-2 py-1 text-[11px] font-medium text-muted-foreground">
+          <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-border bg-secondary px-2 py-1 text-xs font-medium text-muted-foreground">
             <CheckCircle2 size={12} className="text-accent" /> Verified
           </span>
         </div>
