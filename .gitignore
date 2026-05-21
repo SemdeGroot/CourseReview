@@ -60,7 +60,7 @@ __pycache__/
 .mypy_cache/
 .ruff_cache/
 
-# Agent-specific folders
+# Agent specific folders
 .claude/
 .codex/
 .gemini/
