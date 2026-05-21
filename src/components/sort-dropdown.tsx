@@ -14,20 +14,29 @@ import type { SortOption } from "@/lib/sort";
 
 type Props = {
   options: SortOption[];
-  defaultValue: string;
+  defaultValue?: string;
   paramName?: string;
+  value?: string;
+  onChange?: (value: string) => void;
 };
 
 export function SortDropdown({
   options,
-  defaultValue,
+  defaultValue = options[0]?.value ?? "",
   paramName = "sort",
+  value,
+  onChange,
 }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const current = searchParams.get(paramName) ?? defaultValue;
+  const current = value ?? searchParams.get(paramName) ?? defaultValue;
 
   function handleChange(value: string) {
+    if (onChange) {
+      onChange(value);
+      return;
+    }
+
     const params = new URLSearchParams(searchParams.toString());
     if (value === defaultValue) {
       params.delete(paramName);

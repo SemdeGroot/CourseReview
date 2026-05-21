@@ -42,6 +42,20 @@
   --leiden-navy-hover: #0c2577;
   --leiden-orange: #f46e32;
   --leiden-surface: #f5f6f8;
+  --site-shell-bottom-fill: color-mix(in srgb, #ffffff 96%, var(--primary) 4%);
+  --site-shell-top-gradient: linear-gradient(
+    180deg,
+    #ffffff 0%,
+    color-mix(in srgb, #ffffff 98%, var(--primary) 2%) 16%,
+    color-mix(in srgb, #ffffff 96%, var(--primary) 4%) 50%,
+    color-mix(in srgb, #ffffff 93%, var(--primary) 7%) 100%
+  );
+  --site-shell-bottom-gradient: linear-gradient(
+    180deg,
+    color-mix(in srgb, #ffffff 95%, var(--primary) 5%) 0%,
+    color-mix(in srgb, #ffffff 98%, var(--primary) 2%) 48%,
+    var(--site-shell-bottom-fill) 100%
+  );
 }
 
 @theme inline {
@@ -76,9 +90,89 @@
   --font-display: var(--font-bitter);
 }
 
+@keyframes fade-up {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes skeleton-shimmer {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@layer utilities {
+  .site-gutter {
+    padding-inline: 1.125rem;
+  }
+
+  @media (min-width: 640px) {
+    .site-gutter {
+      padding-inline: 1.25rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .site-gutter {
+      padding-inline: 1.5rem;
+    }
+  }
+
+  .animate-fade-up {
+    animation: fade-up 0.3s ease-out both;
+  }
+
+  .animate-fade-up-d1 {
+    animation: fade-up 0.3s 0.05s ease-out both;
+  }
+
+  .animate-fade-up-d2 {
+    animation: fade-up 0.3s 0.1s ease-out both;
+  }
+
+  .animate-fade-up-d3 {
+    animation: fade-up 0.3s 0.15s ease-out both;
+  }
+
+  .site-shell-top {
+    background: var(--site-shell-top-gradient);
+  }
+
+  .site-shell-bottom {
+    background: var(--site-shell-bottom-gradient);
+  }
+
+  .site-shell-bottom-fill {
+    background-color: var(--site-shell-bottom-fill);
+  }
+
+  .animate-skeleton-shimmer {
+    animation: skeleton-shimmer 1.4s ease-in-out infinite;
+  }
+}
+
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  [id] {
+    scroll-margin-top: 80px;
+  }
+
   * {
     border-color: var(--border);
+  }
+
+  :where(a[href], button, [role="button"], [role="combobox"], [role="menuitem"], summary, label, select, input[type="checkbox"], input[type="radio"], input[type="color"], input[type="file"]) {
+    cursor: pointer;
+  }
+
+  :where(button:disabled, [aria-disabled="true"], input:disabled, select:disabled, textarea:disabled) {
+    cursor: not-allowed;
   }
 
   body {
@@ -91,5 +185,17 @@
   h1, h2, h3 {
     font-family: var(--font-bitter), Georgia, serif;
     letter-spacing: -0.01em;
+  }
+
+  @media (max-width: 768px) {
+    input, select, textarea {
+      font-size: 16px !important;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
   }
 }

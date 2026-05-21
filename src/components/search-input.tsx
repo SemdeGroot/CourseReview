@@ -11,25 +11,33 @@ type Props = {
   placeholder?: string;
   className?: string;
   paramName?: string;
+  value?: string;
+  onChange?: (value: string) => void;
 };
 
 export function SearchInput({
   placeholder = "Search by title or course code...",
   className,
   paramName = "q",
+  value: controlledValue,
+  onChange,
 }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const initial = searchParams.get(paramName) ?? "";
-  const [value, setValue] = useState(initial);
+  const [uncontrolledValue, setUncontrolledValue] = useState(initial);
+  const value = controlledValue ?? uncontrolledValue;
+  const isControlled = controlledValue !== undefined;
 
   useEffect(() => {
+    if (isControlled) return;
     // Sync local state when the URL changes externally (e.g. browser back).
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setValue(searchParams.get(paramName) ?? "");
-  }, [searchParams, paramName]);
+    setUncontrolledValue(searchParams.get(paramName) ?? "");
+  }, [searchParams, paramName, isControlled]);
 
   useEffect(() => {
+    if (isControlled) return;
     const current = searchParams.get(paramName) ?? "";
     if (value === current) return;
     const handle = setTimeout(() => {
@@ -42,7 +50,15 @@ export function SearchInput({
       router.replace(`?${params.toString()}`, { scroll: false });
     }, 250);
     return () => clearTimeout(handle);
-  }, [value, paramName, router, searchParams]);
+  }, [value, paramName, router, searchParams, isControlled]);
+
+  function updateValue(nextValue: string) {
+    if (isControlled) {
+      onChange?.(nextValue);
+    } else {
+      setUncontrolledValue(nextValue);
+    }
+  }
 
   return (
     <div className={cn("relative", className)}>
@@ -54,14 +70,14 @@ export function SearchInput({
       <Input
         type="search"
         value={value}
-        onChange={(e) => setValue(e.target.value)}
+        onChange={(e) => updateValue(e.target.value)}
         placeholder={placeholder}
         className="pl-9 pr-9"
       />
       {value && (
         <button
           type="button"
-          onClick={() => setValue("")}
+          onClick={() => updateValue("")}
           className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1 text-muted-foreground hover:bg-secondary hover:text-foreground"
           aria-label="Clear search"
         >

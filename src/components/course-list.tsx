@@ -24,9 +24,11 @@ export type CourseListItem = {
 
 type Props = {
   courses: CourseListItem[];
+  animated?: boolean;
+  listKey?: number;
 };
 
-export function CourseList({ courses }: Props) {
+export function CourseList({ courses, animated = false, listKey = 0 }: Props) {
   if (courses.length === 0) {
     return (
       <div className="rounded-lg border border-border bg-card p-10 text-center">
@@ -40,13 +42,13 @@ export function CourseList({ courses }: Props) {
 
   return (
     <>
-      <DesktopTable courses={courses} />
-      <MobileCards courses={courses} />
+      <DesktopTable courses={courses} animated={animated} listKey={listKey} />
+      <MobileCards courses={courses} animated={animated} listKey={listKey} />
     </>
   );
 }
 
-function DesktopTable({ courses }: Props) {
+function DesktopTable({ courses, animated = false, listKey = 0 }: Props) {
   return (
     <div className="hidden overflow-hidden rounded-lg border border-border bg-card md:block">
       <table className="w-full text-sm">
@@ -62,7 +64,11 @@ function DesktopTable({ courses }: Props) {
         </thead>
         <tbody>
           {courses.map((course) => (
-            <CourseRow key={course.id} course={course} />
+            <CourseRow
+              key={`${listKey}-${course.id}`}
+              course={course}
+              animated={animated}
+            />
           ))}
         </tbody>
       </table>
@@ -70,9 +76,20 @@ function DesktopTable({ courses }: Props) {
   );
 }
 
-function CourseRow({ course }: { course: CourseListItem }) {
+function CourseRow({
+  course,
+  animated,
+}: {
+  course: CourseListItem;
+  animated: boolean;
+}) {
   return (
-    <tr className="group border-b border-border last:border-0 transition-colors hover:bg-secondary/50">
+    <tr
+      className={cn(
+        "group border-b border-border last:border-0 transition-colors hover:bg-secondary/50",
+        animated && "animate-fade-up",
+      )}
+    >
       <td className="px-4 py-3">
         <Link href={`/courses/${course.code}`} className="flex items-start gap-3">
           <span
@@ -125,16 +142,17 @@ function StatCell({ value, suffix }: { value: number; suffix: string }) {
   );
 }
 
-function MobileCards({ courses }: Props) {
+function MobileCards({ courses, animated = false, listKey = 0 }: Props) {
   return (
     <div className="space-y-3 md:hidden">
       {courses.map((course) => (
         <Link
-          key={course.id}
+          key={`${listKey}-${course.id}`}
           href={`/courses/${course.code}`}
           className={cn(
             "block rounded-lg border border-border bg-card p-4 shadow-sm transition-colors",
             "hover:border-primary/30 hover:bg-secondary/30",
+            animated && "animate-fade-up",
           )}
         >
           <div className="flex items-start gap-3">
