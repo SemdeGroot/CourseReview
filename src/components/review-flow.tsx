@@ -17,12 +17,16 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  LeidenEmailInput,
+  LEIDEN_EMAIL_DOMAIN,
+  normalizeLeidenEmailPrefix,
+  validateLeidenEmailPrefix,
+} from "@/components/leiden-email-input";
 import { LevelInput } from "@/components/level-input";
 import { RatingInput } from "@/components/rating-input";
 import { requestOtpAction, verifyOtpAction } from "@/server-actions/auth";
 import { submitReviewAction } from "@/server-actions/reviews";
-
-const ALLOWED_DOMAIN = "@umail.leidenuniv.nl";
 
 type Stage = "email" | "code" | "form";
 
@@ -47,12 +51,13 @@ export function ReviewFlow({ course, initialEmail }: Props) {
 
   function onSendCode(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const prefix = emailPrefix.trim().toLowerCase();
-    if (!prefix) {
-      toast.error("Please enter your name part of the email.");
+    const validationError = validateLeidenEmailPrefix(emailPrefix);
+    if (validationError) {
+      toast.error(validationError);
       return;
     }
-    const fullEmail = `${prefix}${ALLOWED_DOMAIN}`;
+    const prefix = normalizeLeidenEmailPrefix(emailPrefix);
+    const fullEmail = `${prefix}${LEIDEN_EMAIL_DOMAIN}`;
     startTransition(async () => {
       const res = await requestOtpAction(fullEmail);
       if (!res.ok) {
@@ -71,7 +76,12 @@ export function ReviewFlow({ course, initialEmail }: Props) {
       toast.error("Enter the 6-digit code from your email.");
       return;
     }
-    const fullEmail = `${emailPrefix.trim().toLowerCase()}${ALLOWED_DOMAIN}`;
+    const validationError = validateLeidenEmailPrefix(emailPrefix);
+    if (validationError) {
+      toast.error(validationError);
+      return;
+    }
+    const fullEmail = `${normalizeLeidenEmailPrefix(emailPrefix)}${LEIDEN_EMAIL_DOMAIN}`;
     startTransition(async () => {
       const res = await verifyOtpAction(fullEmail, token);
       if (!res.ok) {
@@ -121,22 +131,12 @@ export function ReviewFlow({ course, initialEmail }: Props) {
         <form onSubmit={onSendCode}>
           <CardContent className="space-y-2">
             <Label htmlFor="email">Leiden email</Label>
-            <div className="flex items-center overflow-hidden rounded-md border border-input bg-background focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50 shadow-xs transition-shadow">
-              <input
-                id="email"
-                type="text"
-                autoComplete="username"
-                required
-                placeholder="e.g. s1234567"
-                value={emailPrefix}
-                onChange={(e) => setEmailPrefix(e.target.value)}
-                disabled={pending}
-                className="flex-1 bg-transparent px-3 py-2 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50"
-              />
-              <span className="pointer-events-none select-none border-l border-input bg-muted px-3 py-2 text-sm text-muted-foreground font-mono">
-                {ALLOWED_DOMAIN}
-              </span>
-            </div>
+            <LeidenEmailInput
+              id="email"
+              value={emailPrefix}
+              onChange={setEmailPrefix}
+              disabled={pending}
+            />
             <p className="text-xs text-muted-foreground">
               Enter your student number or username.
             </p>
@@ -152,15 +152,15 @@ export function ReviewFlow({ course, initialEmail }: Props) {
   }
 
   if (stage === "code") {
-    const fullEmail = `${emailPrefix.trim().toLowerCase()}${ALLOWED_DOMAIN}`;
+    const fullEmail = `${normalizeLeidenEmailPrefix(emailPrefix)}${LEIDEN_EMAIL_DOMAIN}`;
     return (
       <Card className="shadow-sm">
         <CardHeader>
           <CardTitle className="text-2xl">Enter code</CardTitle>
           <CardDescription>
             We emailed a 6-digit code to{" "}
-            <span className="font-medium text-foreground">{fullEmail}</span>. It is valid for 60
-            minutes.
+            <span className="break-all font-medium text-foreground">{fullEmail}</span>. It is
+            valid for 60 minutes.
           </CardDescription>
         </CardHeader>
         <form onSubmit={onVerifyCode}>

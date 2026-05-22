@@ -14,16 +14,20 @@ export default async function ProtectedAdminLayout({
   children: React.ReactNode;
 }) {
   const supabase = await createSupabaseServerClient();
-  const [userResult, adminResult] = await Promise.all([
-    supabase.auth.getUser(),
-    supabase.rpc("is_admin"),
-  ]);
   const {
+    error: userError,
     data: { user },
-  } = userResult;
-  if (!user) notFound();
+  } = await supabase.auth.getUser();
+  if (!user) {
+    if (userError) console.error("Protected admin user lookup failed", userError);
+    notFound();
+  }
 
-  const { data: isAdmin } = adminResult;
+  const { data: isAdmin, error: adminError } = await supabase.rpc("is_admin");
+  if (adminError) {
+    console.error("Protected admin role lookup failed", adminError);
+    notFound();
+  }
   if (!isAdmin) notFound();
 
   return (

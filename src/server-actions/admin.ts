@@ -29,10 +29,19 @@ const OPAQUE_ERROR = "Verification failed. Check your code and try again.";
 async function currentAdmin() {
   const supabase = await createSupabaseServerClient();
   const {
+    error: userError,
     data: { user },
   } = await supabase.auth.getUser();
+  if (userError) {
+    console.error("Admin user lookup failed", userError);
+    return null;
+  }
   if (!user) return null;
-  const { data: isAdmin } = await supabase.rpc("is_admin");
+  const { data: isAdmin, error: adminError } = await supabase.rpc("is_admin");
+  if (adminError) {
+    console.error("Admin role lookup failed", adminError);
+    return null;
+  }
   if (!isAdmin) return null;
   return user;
 }
@@ -58,9 +67,27 @@ export async function verifyAdminOtpAction(
     token: parsed.data.code,
     type: "email",
   });
-  if (error) return { ok: false, error: OPAQUE_ERROR };
+  if (error) {
+    console.error("Admin OTP verification failed", error);
+    return { ok: false, error: OPAQUE_ERROR };
+  }
 
-  const { data: isAdmin } = await supabase.rpc("is_admin");
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+  if (userError || !user) {
+    console.error("Admin OTP verified but user lookup failed", userError);
+    await supabase.auth.signOut();
+    return { ok: false, error: OPAQUE_ERROR };
+  }
+
+  const { data: isAdmin, error: adminError } = await supabase.rpc("is_admin");
+  if (adminError) {
+    console.error("Admin OTP role lookup failed", adminError);
+    await supabase.auth.signOut();
+    return { ok: false, error: OPAQUE_ERROR };
+  }
   if (!isAdmin) {
     await supabase.auth.signOut();
     return { ok: false, error: OPAQUE_ERROR };

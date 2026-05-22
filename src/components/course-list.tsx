@@ -220,36 +220,36 @@ function MobileCards({
                 </div>
               </div>
             </Link>
-            <dl className="mt-3 grid grid-cols-4 gap-2 border-t border-border pt-3 text-xs">
-              <div>
+            <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-3 border-t border-border pt-3 text-xs min-[380px]:grid-cols-4">
+              <div className="min-w-0">
                 <dt className="text-[11px] uppercase tracking-wide text-muted-foreground">
                   Rating
                 </dt>
-                <dd className="mt-0.5">
-                  <Rating value={course.avg_rating} size="sm" />
+                <dd className="mt-0.5 whitespace-nowrap font-medium tabular-nums">
+                  {course.avg_rating ? `${course.avg_rating.toFixed(1)} / 5` : "-"}
                 </dd>
               </div>
-              <div>
+              <div className="min-w-0">
                 <dt className="text-[11px] uppercase tracking-wide text-muted-foreground">
                   Diff.
                 </dt>
-                <dd className="mt-0.5 font-medium tabular-nums">
+                <dd className="mt-0.5 whitespace-nowrap font-medium tabular-nums">
                   {course.avg_difficulty ? course.avg_difficulty.toFixed(1) : "-"}
                 </dd>
               </div>
-              <div>
+              <div className="min-w-0">
                 <dt className="text-[11px] uppercase tracking-wide text-muted-foreground">
                   Work
                 </dt>
-                <dd className="mt-0.5 font-medium tabular-nums">
+                <dd className="mt-0.5 whitespace-nowrap font-medium tabular-nums">
                   {course.avg_workload ? `${course.avg_workload.toFixed(1)}h` : "-"}
                 </dd>
               </div>
-              <div>
+              <div className="min-w-0">
                 <dt className="text-[11px] uppercase tracking-wide text-muted-foreground">
                   Reviews
                 </dt>
-                <dd className="mt-0.5 font-medium tabular-nums">
+                <dd className="mt-0.5 whitespace-nowrap font-medium tabular-nums">
                   {course.review_count}
                 </dd>
               </div>
