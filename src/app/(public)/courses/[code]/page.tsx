@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ExternalLink, Pencil, Star } from "lucide-react";
+import { ArrowLeft, CalendarDays, ExternalLink, Pencil, Star } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/lib/icons/Icon";
 import { ReviewCard, type ReviewCardData } from "@/components/review-card";
+import { SemesterBadge, formatSemesters } from "@/components/semester-badge";
 import { SortDropdown } from "@/components/sort-dropdown";
 import {
   SpecializationBadge,
@@ -102,22 +103,23 @@ export default async function CourseDetailPage({
             </Button>
           </div>
 
-          <div className="mt-8 grid grid-cols-2 gap-x-6 gap-y-4 rounded-lg border border-border bg-card p-5 sm:grid-cols-4">
+          <div className="mt-8 grid grid-cols-2 gap-x-6 gap-y-4 rounded-lg border border-border bg-card p-5 sm:grid-cols-5">
             <StatPill
               label="Rating"
-              value={course.avg_rating ? course.avg_rating.toFixed(1) : "N/A"}
+              value={course.avg_rating ? course.avg_rating.toFixed(1) : "-"}
               hint={course.avg_rating ? "/ 5" : undefined}
             />
             <StatPill
               label="Difficulty"
-              value={course.avg_difficulty ? course.avg_difficulty.toFixed(1) : "N/A"}
+              value={course.avg_difficulty ? course.avg_difficulty.toFixed(1) : "-"}
               hint={course.avg_difficulty ? "/ 5" : undefined}
             />
             <StatPill
               label="Workload"
-              value={course.avg_workload ? course.avg_workload.toFixed(1) : "N/A"}
+              value={course.avg_workload ? course.avg_workload.toFixed(1) : "-"}
               hint={course.avg_workload ? "h/wk" : undefined}
             />
+            <StatPill label="Offered" value={formatSemesters(course.offered_semesters)} />
             <StatPill label="Reviews" value={course.review_count} />
           </div>
         </div>
@@ -169,6 +171,27 @@ export default async function CourseDetailPage({
           </div>
 
           <aside className="order-1 space-y-5 lg:order-2">
+            <div className="rounded-lg border border-border bg-card p-5">
+              <div className="flex items-start gap-3">
+                <span className="flex size-9 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
+                  <CalendarDays size={18} />
+                </span>
+                <div>
+                  <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                    Offered in
+                  </h2>
+                  <div className="mt-2 flex flex-wrap gap-1.5">
+                    {course.offered_semesters.length ? (
+                      course.offered_semesters.map((semester) => (
+                        <SemesterBadge key={semester} semester={semester} />
+                      ))
+                    ) : (
+                      <span className="text-sm text-muted-foreground">-</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
             <div className="rounded-lg border border-border bg-card p-5">
               <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
                 About this course
@@ -240,6 +263,7 @@ async function fetchCourseDetail(code: string) {
       color: course.color ?? "#001158",
       icon: course.icon ?? "book-open",
       ec: Number(course.ec ?? 6),
+      offered_semesters: course.offered_semesters ?? [],
       avg_rating: Number(course.avg_rating ?? 0),
       avg_difficulty: Number(course.avg_difficulty ?? 0),
       avg_workload: Number(course.avg_workload ?? 0),

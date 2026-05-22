@@ -132,8 +132,8 @@ secure_password_change = false
 max_frequency = "1s"
 # Number of characters used in the email OTP.
 otp_length = 6
-# Number of seconds before the email OTP expires (10 minutes is a sensible default for students).
-otp_expiry = 600
+# Number of seconds before the email OTP expires.
+otp_expiry = 3600
 
 # Use a production-ready SMTP server
 # [auth.email.smtp]

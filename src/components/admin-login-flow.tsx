@@ -43,7 +43,7 @@ export function AdminLoginFlow() {
         toast.error(res.error);
         return;
       }
-      toast.success("We sent a 6-digit code to your email.");
+      toast.success("We sent a 6-digit code to your email. It is valid for 60 minutes.");
       setStage("code");
     });
   }
@@ -76,8 +76,8 @@ export function AdminLoginFlow() {
         </CardTitle>
         <CardDescription>
           {stage === "email"
-            ? "Verify your Leiden email to continue."
-            : `We emailed a 6-digit code to ${emailPrefix.trim().toLowerCase()}${ALLOWED_DOMAIN}.`}
+            ? "Verify your Leiden email to continue. Codes are valid for 60 minutes."
+            : `We emailed a 6-digit code to ${emailPrefix.trim().toLowerCase()}${ALLOWED_DOMAIN}. It is valid for 60 minutes.`}
         </CardDescription>
       </CardHeader>
 

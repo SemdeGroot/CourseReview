@@ -98,6 +98,7 @@ export type Database = {
           ec: number
           icon: string
           id: string
+          offered_semesters: string[]
           studiegids_url: string
           title: string
         }
@@ -109,6 +110,7 @@ export type Database = {
           ec?: number
           icon?: string
           id?: string
+          offered_semesters?: string[]
           studiegids_url: string
           title: string
         }
@@ -120,6 +122,7 @@ export type Database = {
           ec?: number
           icon?: string
           id?: string
+          offered_semesters?: string[]
           studiegids_url?: string
           title?: string
         }
@@ -211,6 +214,7 @@ export type Database = {
           ec: number | null
           icon: string | null
           id: string | null
+          offered_semesters: string[] | null
           review_count: number | null
           studiegids_url: string | null
           title: string | null
@@ -267,6 +271,10 @@ export type Database = {
       }
     }
     Functions: {
+      delete_expired_reviews: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
       is_admin: {
         Args: Record<PropertyKey, never>
         Returns: boolean

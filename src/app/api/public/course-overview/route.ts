@@ -94,6 +94,7 @@ export async function GET() {
       avg_difficulty: Number(course.avg_difficulty ?? 0),
       avg_workload: Number(course.avg_workload ?? 0),
       review_count: Number(course.review_count ?? 0),
+      offered_semesters: course.offered_semesters ?? [],
       specializations: specsByCourse.get(course.id!) ?? [],
     }));
 

@@ -11,6 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { SortOption } from "@/lib/sort";
+import { cn } from "@/lib/utils";
 
 type Props = {
   options: SortOption[];
@@ -18,6 +19,7 @@ type Props = {
   paramName?: string;
   value?: string;
   onChange?: (value: string) => void;
+  className?: string;
 };
 
 export function SortDropdown({
@@ -26,6 +28,7 @@ export function SortDropdown({
   paramName = "sort",
   value,
   onChange,
+  className,
 }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -48,7 +51,7 @@ export function SortDropdown({
 
   return (
     <Select value={current} onValueChange={handleChange}>
-      <SelectTrigger className="w-[220px]">
+      <SelectTrigger className={cn("w-[220px]", className)}>
         <ArrowUpDown size={14} className="text-muted-foreground" />
         <SelectValue />
       </SelectTrigger>

@@ -18,7 +18,7 @@ const bitter = Bitter({
 
 export const metadata: Metadata = {
   title: {
-    default: "LeidenCS - Course Reviews",
+    default: "LeidenCS - MSc Computer Science Course Reviews",
     template: "%s | LeidenCS",
   },
   description:

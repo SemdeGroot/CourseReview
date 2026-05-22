@@ -70,6 +70,7 @@ class CourseDetail:
     description: str
     studiegids_url: str
     ec: int
+    offered_semesters: list[str]
     color: str
     icon: str
     mappings: dict[str, str] = field(default_factory=dict)
@@ -196,12 +197,19 @@ class CourseParser(HTMLParser):
         self.in_dd = False
         self.current_dt: list[str] = []
         self.current_dd: list[str] = []
+        self.current_period_blocks: set[int] = set()
         self.metadata: dict[str, str] = {}
         self.english_url: str | None = None
         self.in_article = False
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         attrs_dict = dict(attrs)
+        if tag == "span" and self.in_dd:
+            class_names = attrs_dict.get("class", "")
+            if "block-on" in class_names:
+                match = re.search(r"\bblock-(\d)\b", class_names)
+                if match:
+                    self.current_period_blocks.add(int(match.group(1)))
         if tag == "article":
             self.in_article = True
             if self.seen_h1 and not self.seen_h2:
@@ -218,6 +226,7 @@ class CourseParser(HTMLParser):
         if tag == "dd":
             self.in_dd = True
             self.current_dd = []
+            self.current_period_blocks = set()
             return
         if not self.in_article:
             return
@@ -258,6 +267,8 @@ class CourseParser(HTMLParser):
         elif tag == "dd":
             key = clean_text("".join(self.current_dt))
             value = clean_text("".join(self.current_dd))
+            if key.lower() == "periode" and self.current_period_blocks:
+                value = format_semesters(self.current_period_blocks)
             if key:
                 self.metadata[key] = value
             self.in_dd = False
@@ -276,12 +287,30 @@ class CourseParser(HTMLParser):
 
 
 def clean_text(value: str) -> str:
-    return re.sub(r"\s+", " ", html.unescape(value)).strip()
+    text = html.unescape(value).replace("\u2014", "-").replace("\u2013", "-")
+    return re.sub(r"\s+", " ", text).strip()
 
 
 def parse_int(value: str) -> int:
     match = re.search(r"\d+", value or "")
     return int(match.group(0)) if match else 0
+
+
+def format_semesters(blocks: set[int]) -> str:
+    semesters: list[str] = []
+    if blocks.intersection({1, 2}):
+        semesters.append("S1")
+    if blocks.intersection({3, 4}):
+        semesters.append("S2")
+    return ",".join(semesters)
+
+
+def parse_semesters(value: str) -> list[str]:
+    semesters: list[str] = []
+    for semester in ("S1", "S2"):
+        if semester in value and semester not in semesters:
+            semesters.append(semester)
+    return semesters
 
 
 def summarize_description(value: str, max_chars: int = 300) -> str:
@@ -348,17 +377,20 @@ def load_existing_presentation(seed_path: Path) -> dict[str, CoursePresentation]
         return {}
 
     seed = seed_path.read_text(encoding="utf-8")
-    marker = "insert into public.courses (code, title, description, studiegids_url, color, icon, ec) values"
+    marker = "insert into public.courses (code, title, description, studiegids_url, color, icon, ec"
     if marker not in seed:
         return {}
 
-    course_rows = seed.split(marker, 1)[1].split("on conflict (code) do update", 1)[0]
+    course_section = seed.split(marker, 1)[1]
+    course_rows = course_section.split(" values", 1)[1].split("on conflict (code) do update", 1)[0]
     presentation: dict[str, CoursePresentation] = {}
     for line in course_rows.splitlines():
         values = parse_sql_values(line)
-        if len(values) != 7:
+        if len(values) < 7:
             continue
-        code, _title, _description, _url, color, icon, _ec = values
+        code = values[0]
+        color = values[4]
+        icon = values[5]
         presentation[code] = CoursePresentation(color=color, icon=icon)
     return presentation
 
@@ -429,6 +461,7 @@ def scrape_course(course: StudyCourse, use_cache: bool) -> CourseDetail:
         description=description,
         studiegids_url=parser.english_url or course.url,
         ec=ec,
+        offered_semesters=parse_semesters(parser.metadata.get("Periode", "")),
         color=COLOR_BY_SPEC.get(course.spec_code, "#001158"),
         icon=icon,
     )
@@ -436,6 +469,12 @@ def scrape_course(course: StudyCourse, use_cache: bool) -> CourseDetail:
 
 def sql_string(value: str) -> str:
     return "'" + value.replace("'", "''") + "'"
+
+
+def sql_text_array(values: list[str]) -> str:
+    if not values:
+        return "array[]::text[]"
+    return "array[{}]::text[]".format(", ".join(sql_string(value) for value in values))
 
 
 def build_seed(courses: list[CourseDetail]) -> str:
@@ -457,11 +496,11 @@ def build_seed(courses: list[CourseDetail]) -> str:
             "set name = excluded.name,",
             "    study_id = excluded.study_id;",
             "",
-            "insert into public.courses (code, title, description, studiegids_url, color, icon, ec) values",
+            "insert into public.courses (code, title, description, studiegids_url, color, icon, ec, offered_semesters) values",
         ]
     )
     course_rows = [
-        "  ({}, {}, {}, {}, {}, {}, {})".format(
+        "  ({}, {}, {}, {}, {}, {}, {}, {})".format(
             sql_string(course.code),
             sql_string(course.title),
             sql_string(course.description),
@@ -469,6 +508,7 @@ def build_seed(courses: list[CourseDetail]) -> str:
             sql_string(course.color),
             sql_string(course.icon),
             course.ec,
+            sql_text_array(course.offered_semesters),
         )
         for course in courses
     ]
@@ -481,7 +521,8 @@ def build_seed(courses: list[CourseDetail]) -> str:
             "    studiegids_url = excluded.studiegids_url,",
             "    color = excluded.color,",
             "    icon = excluded.icon,",
-            "    ec = excluded.ec;",
+            "    ec = excluded.ec,",
+            "    offered_semesters = excluded.offered_semesters;",
             "",
             "with mapping (course_code, spec_code, role) as (values",
         ]

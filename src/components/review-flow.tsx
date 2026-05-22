@@ -59,7 +59,7 @@ export function ReviewFlow({ course, initialEmail }: Props) {
         toast.error(res.error);
         return;
       }
-      toast.success("We sent a 6-digit code to your email.");
+      toast.success("We sent a 6-digit code to your email. It is valid for 60 minutes.");
       setStage("code");
     });
   }
@@ -115,7 +115,7 @@ export function ReviewFlow({ course, initialEmail }: Props) {
           <CardTitle className="text-2xl">Verify your Leiden email</CardTitle>
           <CardDescription>
             We send a 6-digit code to confirm you are a Leiden student. Your review is anonymous.
-            Your email is never shown on the site.
+            Your email is never shown on the site. The code is valid for 60 minutes.
           </CardDescription>
         </CardHeader>
         <form onSubmit={onSendCode}>
@@ -159,7 +159,8 @@ export function ReviewFlow({ course, initialEmail }: Props) {
           <CardTitle className="text-2xl">Enter code</CardTitle>
           <CardDescription>
             We emailed a 6-digit code to{" "}
-            <span className="font-medium text-foreground">{fullEmail}</span>.
+            <span className="font-medium text-foreground">{fullEmail}</span>. It is valid for 60
+            minutes.
           </CardDescription>
         </CardHeader>
         <form onSubmit={onVerifyCode}>

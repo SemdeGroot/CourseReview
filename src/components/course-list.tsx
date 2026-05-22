@@ -3,6 +3,7 @@ import { MessageSquare } from "lucide-react";
 
 import { Icon } from "@/lib/icons/Icon";
 import { Rating } from "@/components/rating";
+import { SemesterBadge } from "@/components/semester-badge";
 import {
   SpecializationBadge,
   type SpecializationPill,
@@ -19,6 +20,7 @@ export type CourseListItem = {
   avg_difficulty: number;
   avg_workload: number;
   review_count: number;
+  offered_semesters: string[];
   specializations: SpecializationPill[];
 };
 
@@ -77,6 +79,7 @@ function DesktopTable({
           <tr>
             <th className="px-4 py-3 text-left font-medium">Course</th>
             <th className="px-3 py-3 text-left font-medium">Code</th>
+            <th className="px-3 py-3 text-left font-medium">Semester</th>
             <th className="px-3 py-3 text-left font-medium">Rating</th>
             <th className="px-3 py-3 text-left font-medium">Difficulty</th>
             <th className="px-3 py-3 text-left font-medium">Workload</th>
@@ -138,6 +141,9 @@ function CourseRow({
       </td>
       <td className="px-3 py-3 align-middle text-xs font-mono text-muted-foreground">
         {course.code}
+      </td>
+      <td className="px-3 py-3 align-middle">
+        <SemesterBadges semesters={course.offered_semesters} />
       </td>
       <td className="px-3 py-3 align-middle">
         <Rating value={course.avg_rating} />
@@ -210,6 +216,7 @@ function MobileCards({
                   {course.specializations.slice(0, 4).map((s) => (
                     <SpecializationBadge key={s.code} code={s.code} role={s.role} />
                   ))}
+                  <SemesterBadges semesters={course.offered_semesters} />
                 </div>
               </div>
             </Link>
@@ -251,5 +258,19 @@ function MobileCards({
         );
       })}
     </div>
+  );
+}
+
+function SemesterBadges({ semesters }: { semesters: string[] }) {
+  if (!semesters.length) {
+    return <span className="text-xs text-muted-foreground">TBA</span>;
+  }
+
+  return (
+    <span className="inline-flex flex-wrap gap-1">
+      {semesters.map((semester) => (
+        <SemesterBadge key={semester} semester={semester} />
+      ))}
+    </span>
   );
 }
