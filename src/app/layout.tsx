@@ -23,6 +23,9 @@ export const metadata: Metadata = {
   },
   description:
     "Course reviews from verified MSc Computer Science students at Leiden University. Find out what a course is really like before you enroll.",
+  icons: {
+    icon: "/favicon.svg",
+  },
 };
 
 export const viewport: Viewport = {
@@ -41,7 +44,7 @@ export default function RootLayout({
       className={`${inter.variable} ${bitter.variable} h-full antialiased`}
       data-scroll-behavior="smooth"
     >
-      <body className="min-h-full flex flex-col bg-background text-foreground">
+      <body className="min-h-full flex flex-col bg-secondary text-foreground">
         {children}
         <Toaster richColors closeButton position="top-right" />
       </body>
