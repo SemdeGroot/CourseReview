@@ -17,10 +17,15 @@ export function SiteHeader() {
           >
             <GraduationCap size={18} />
           </span>
-          <span className="text-base flex items-baseline gap-2">
-            <span className="sm:hidden">LeidenCS MSCS Reviews</span>
+          <span className="flex items-baseline gap-2 text-base">
+            <span className="sm:hidden">
+              LeidenCS{" "}
+              <span className="text-xs font-normal text-muted-foreground">
+                MSCS Reviews
+              </span>
+            </span>
             <span className="hidden sm:inline">LeidenCS</span>
-            <span className="hidden sm:inline text-xs font-normal text-muted-foreground">
+            <span className="hidden text-xs font-normal text-muted-foreground sm:inline">
               MSc Computer Science Reviews
             </span>
           </span>

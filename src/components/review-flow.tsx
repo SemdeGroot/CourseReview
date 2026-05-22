@@ -114,8 +114,8 @@ export function ReviewFlow({ course, initialEmail }: Props) {
         <CardHeader>
           <CardTitle className="text-2xl">Verify your Leiden email</CardTitle>
           <CardDescription>
-            We send a 6-digit code to confirm you are a Leiden student. Your review is posted
-            anonymously — your email is never shown on the site.
+            We send a 6-digit code to confirm you are a Leiden student. Your review is anonymous.
+            Your email is never shown on the site.
           </CardDescription>
         </CardHeader>
         <form onSubmit={onSendCode}>

@@ -23,14 +23,14 @@ function HeroSection() {
           Choose courses with context from students who took them.
         </h1>
         <p className="animate-fade-up-d1 mt-5 max-w-xl text-lg leading-relaxed text-muted-foreground">
-          LeidenCS collects anonymous student reviews for the Leiden MSc Computer Science
-          curriculum, including difficulty, workload, and rating.
+          LeidenCS collects course reviews from Leiden MSc Computer Science students,
+          including difficulty, workload and rating.
         </p>
         <div className="animate-fade-up-d2 mt-8 flex flex-wrap items-center gap-3">
           <Button
             asChild
             size="lg"
-            className="bg-accent text-accent-foreground hover:bg-accent/90"
+            className="bg-accent text-base text-accent-foreground hover:bg-accent/90"
           >
             <a href="#courses">
               Browse courses <ArrowRight size={16} />

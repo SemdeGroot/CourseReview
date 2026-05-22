@@ -25,10 +25,16 @@ export type CourseListItem = {
 type Props = {
   courses: CourseListItem[];
   animated?: boolean;
+  highlightFromIndex?: number | null;
   listKey?: number;
 };
 
-export function CourseList({ courses, animated = false, listKey = 0 }: Props) {
+export function CourseList({
+  courses,
+  animated = false,
+  highlightFromIndex = null,
+  listKey = 0,
+}: Props) {
   if (courses.length === 0) {
     return (
       <div className="rounded-lg border border-border bg-card p-10 text-center">
@@ -42,13 +48,28 @@ export function CourseList({ courses, animated = false, listKey = 0 }: Props) {
 
   return (
     <>
-      <DesktopTable courses={courses} animated={animated} listKey={listKey} />
-      <MobileCards courses={courses} animated={animated} listKey={listKey} />
+      <DesktopTable
+        courses={courses}
+        animated={animated}
+        highlightFromIndex={highlightFromIndex}
+        listKey={listKey}
+      />
+      <MobileCards
+        courses={courses}
+        animated={animated}
+        highlightFromIndex={highlightFromIndex}
+        listKey={listKey}
+      />
     </>
   );
 }
 
-function DesktopTable({ courses, animated = false, listKey = 0 }: Props) {
+function DesktopTable({
+  courses,
+  animated = false,
+  highlightFromIndex = null,
+  listKey = 0,
+}: Props) {
   return (
     <div className="hidden overflow-hidden rounded-lg border border-border bg-card md:block">
       <table className="w-full text-sm">
@@ -63,11 +84,12 @@ function DesktopTable({ courses, animated = false, listKey = 0 }: Props) {
           </tr>
         </thead>
         <tbody>
-          {courses.map((course) => (
+          {courses.map((course, index) => (
             <CourseRow
               key={`${listKey}-${course.id}`}
               course={course}
               animated={animated}
+              highlighted={highlightFromIndex !== null && index >= highlightFromIndex}
             />
           ))}
         </tbody>
@@ -79,15 +101,19 @@ function DesktopTable({ courses, animated = false, listKey = 0 }: Props) {
 function CourseRow({
   course,
   animated,
+  highlighted,
 }: {
   course: CourseListItem;
   animated: boolean;
+  highlighted: boolean;
 }) {
   return (
     <tr
+      data-new-course={highlighted ? "true" : undefined}
       className={cn(
         "group border-b border-border last:border-0 transition-colors hover:bg-secondary/50",
         animated && "animate-fade-up",
+        highlighted && "animate-new-course",
       )}
     >
       <td className="px-4 py-3">
@@ -142,67 +168,88 @@ function StatCell({ value, suffix }: { value: number; suffix: string }) {
   );
 }
 
-function MobileCards({ courses, animated = false, listKey = 0 }: Props) {
+function MobileCards({
+  courses,
+  animated = false,
+  highlightFromIndex = null,
+  listKey = 0,
+}: Props) {
   return (
     <div className="space-y-3 md:hidden">
-      {courses.map((course) => (
-        <article
-          key={`${listKey}-${course.id}`}
-          className={cn(
-            "rounded-lg border border-border bg-card p-4 shadow-sm transition-colors",
-            "hover:border-primary/30 hover:bg-secondary/30",
-            animated && "animate-fade-up",
-          )}
-        >
-          <Link href={`/courses/${course.code}`} className="flex items-start gap-3">
-            <span
-              className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-md text-white"
-              style={{ backgroundColor: course.color }}
-            >
-              <Icon name={course.icon} size={20} className="text-white" />
-            </span>
-            <div className="min-w-0 flex-1">
-              <div className="flex items-start justify-between gap-2">
-                <h3 className="text-sm font-semibold leading-snug text-foreground">
-                  {course.title}
-                </h3>
-                <span className="text-xs font-mono text-muted-foreground shrink-0">
-                  {course.code}
-                </span>
+      {courses.map((course, index) => {
+        const highlighted = highlightFromIndex !== null && index >= highlightFromIndex;
+
+        return (
+          <article
+            key={`${listKey}-${course.id}`}
+            data-new-course={highlighted ? "true" : undefined}
+            className={cn(
+              "rounded-lg border border-border bg-card p-4 shadow-sm transition-colors",
+              "hover:border-primary/30 hover:bg-secondary/30",
+              animated && "animate-fade-up",
+              highlighted && "animate-new-course",
+            )}
+          >
+            <Link href={`/courses/${course.code}`} className="flex items-start gap-3">
+              <span
+                className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-md text-white"
+                style={{ backgroundColor: course.color }}
+              >
+                <Icon name={course.icon} size={20} className="text-white" />
+              </span>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-start justify-between gap-2">
+                  <h3 className="text-sm font-semibold leading-snug text-foreground">
+                    {course.title}
+                  </h3>
+                  <span className="shrink-0 text-xs font-mono text-muted-foreground">
+                    {course.code}
+                  </span>
+                </div>
+                <div className="mt-1.5 flex flex-wrap gap-1">
+                  {course.specializations.slice(0, 4).map((s) => (
+                    <SpecializationBadge key={s.code} code={s.code} role={s.role} />
+                  ))}
+                </div>
               </div>
-              <div className="mt-1.5 flex flex-wrap gap-1">
-                {course.specializations.slice(0, 4).map((s) => (
-                  <SpecializationBadge key={s.code} code={s.code} role={s.role} />
-                ))}
+            </Link>
+            <dl className="mt-3 grid grid-cols-4 gap-2 border-t border-border pt-3 text-xs">
+              <div>
+                <dt className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                  Rating
+                </dt>
+                <dd className="mt-0.5">
+                  <Rating value={course.avg_rating} size="sm" />
+                </dd>
               </div>
-            </div>
-          </Link>
-          <dl className="mt-3 grid grid-cols-4 gap-2 border-t border-border pt-3 text-xs">
-            <div>
-              <dt className="text-[11px] uppercase tracking-wide text-muted-foreground">Rating</dt>
-              <dd className="mt-0.5">
-                <Rating value={course.avg_rating} size="sm" />
-              </dd>
-            </div>
-            <div>
-              <dt className="text-[11px] uppercase tracking-wide text-muted-foreground">Diff.</dt>
-              <dd className="mt-0.5 font-medium tabular-nums">
-                {course.avg_difficulty ? course.avg_difficulty.toFixed(1) : "-"}
-              </dd>
-            </div>
-            <div>
-              <dt className="text-[11px] uppercase tracking-wide text-muted-foreground">Work</dt>
-              <dd className="mt-0.5 font-medium tabular-nums">
-                {course.avg_workload ? `${course.avg_workload.toFixed(1)}h` : "-"}
-              </dd>
-            </div>
-            <div>
-              <dt className="text-[11px] uppercase tracking-wide text-muted-foreground">Reviews</dt>
-              <dd className="mt-0.5 font-medium tabular-nums">{course.review_count}</dd>
-            </div>
-          </dl>
-        </article>
-      ))}
+              <div>
+                <dt className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                  Diff.
+                </dt>
+                <dd className="mt-0.5 font-medium tabular-nums">
+                  {course.avg_difficulty ? course.avg_difficulty.toFixed(1) : "-"}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                  Work
+                </dt>
+                <dd className="mt-0.5 font-medium tabular-nums">
+                  {course.avg_workload ? `${course.avg_workload.toFixed(1)}h` : "-"}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                  Reviews
+                </dt>
+                <dd className="mt-0.5 font-medium tabular-nums">
+                  {course.review_count}
+                </dd>
+              </div>
+            </dl>
+          </article>
+        );
+      })}
     </div>
   );
 }

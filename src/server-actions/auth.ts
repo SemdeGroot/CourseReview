@@ -41,7 +41,7 @@ export async function requestOtpAction(rawEmail: string): Promise<ActionResult> 
 
 /**
  * Verify the OTP code. On success, Supabase sets httpOnly session cookies via
- * the server client — future requests from this browser are authenticated.
+ * the server client. Future requests from this browser are authenticated.
  */
 export async function verifyOtpAction(
   email: string,

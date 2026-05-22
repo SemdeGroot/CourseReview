@@ -1,6 +1,6 @@
 "use client";
 
-import { useDeferredValue, useState } from "react";
+import { useDeferredValue, useEffect, useRef, useState } from "react";
 
 import { CourseList, type CourseListItem } from "@/components/course-list";
 import { SearchInput } from "@/components/search-input";
@@ -25,8 +25,10 @@ export function CourseBrowser({ courses }: Props) {
   const [sort, setSort] = useState(DEFAULT_COURSE_SORT);
   const [sortAnimationVersion, setSortAnimationVersion] = useState(0);
   const [shouldAnimateList, setShouldAnimateList] = useState(false);
+  const [highlightFromIndex, setHighlightFromIndex] = useState<number | null>(null);
   const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE_COURSES);
   const deferredQuery = useDeferredValue(query);
+  const listContainerRef = useRef<HTMLDivElement>(null);
 
   const sortOption = resolveCourseSort(sort);
 
@@ -34,12 +36,14 @@ export function CourseBrowser({ courses }: Props) {
     setSort(value);
     setSortAnimationVersion((version) => version + 1);
     setShouldAnimateList(true);
+    setHighlightFromIndex(null);
     setVisibleCount(INITIAL_VISIBLE_COURSES);
   }
 
   function handleQuery(value: string) {
     setQuery(value);
     setShouldAnimateList(false);
+    setHighlightFromIndex(null);
     setVisibleCount(INITIAL_VISIBLE_COURSES);
   }
 
@@ -73,6 +77,32 @@ export function CourseBrowser({ courses }: Props) {
   const hasMoreCourses = visibleCourses.length < sortedCourses.length;
   const shouldUseScrollContainer = sortedCourses.length > 8;
 
+  useEffect(() => {
+    if (highlightFromIndex === null) return;
+
+    const timeoutId = window.setTimeout(() => {
+      setHighlightFromIndex(null);
+    }, 1100);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [highlightFromIndex]);
+
+  useEffect(() => {
+    if (highlightFromIndex === null) return;
+
+    const newCourse = Array.from(
+      listContainerRef.current?.querySelectorAll<HTMLElement>(
+        "[data-new-course='true']",
+      ) ?? [],
+    ).find((element) => element.offsetParent !== null);
+    newCourse?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }, [highlightFromIndex, visibleCourses.length]);
+
+  function handleShowMore() {
+    setHighlightFromIndex(visibleCourses.length);
+    setVisibleCount((current) => current + VISIBLE_COURSE_INCREMENT);
+  }
+
   return (
     <div className="space-y-3">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
@@ -80,6 +110,7 @@ export function CourseBrowser({ courses }: Props) {
         <SortDropdown options={COURSE_SORT_OPTIONS} value={sort} onChange={handleSort} />
       </div>
       <div
+        ref={listContainerRef}
         className={cn(
           shouldUseScrollContainer && "max-h-[560px] overflow-y-auto rounded-lg border border-border pr-1",
         )}
@@ -87,6 +118,7 @@ export function CourseBrowser({ courses }: Props) {
         <CourseList
           courses={visibleCourses}
           animated={shouldAnimateList}
+          highlightFromIndex={highlightFromIndex}
           listKey={sortAnimationVersion}
         />
         {hasMoreCourses ? (
@@ -99,7 +131,7 @@ export function CourseBrowser({ courses }: Props) {
               variant="outline"
               size="sm"
               className="hover:bg-secondary hover:text-foreground"
-              onClick={() => setVisibleCount((current) => current + VISIBLE_COURSE_INCREMENT)}
+              onClick={handleShowMore}
             >
               Show more
             </Button>

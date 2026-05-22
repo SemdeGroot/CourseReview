@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     template: "%s | LeidenCS",
   },
   description:
-    "Honest, anonymous reviews of MSc Computer Science courses at Leiden University. Find out what a course is really like before you enroll.",
+    "Course reviews from verified MSc Computer Science students at Leiden University. Find out what a course is really like before you enroll.",
 };
 
 export default function RootLayout({

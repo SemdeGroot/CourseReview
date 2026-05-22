@@ -75,6 +75,12 @@ class CourseDetail:
     mappings: dict[str, str] = field(default_factory=dict)
 
 
+@dataclass(frozen=True)
+class CoursePresentation:
+    color: str
+    icon: str
+
+
 class StudyParser(HTMLParser):
     def __init__(self, spec_code: str) -> None:
         super().__init__(convert_charrefs=True)
@@ -278,6 +284,85 @@ def parse_int(value: str) -> int:
     return int(match.group(0)) if match else 0
 
 
+def summarize_description(value: str, max_chars: int = 300) -> str:
+    text = clean_text(value)
+    if not text:
+        return ""
+
+    sentences = re.split(r"(?<=[.!?])\s+", text)
+    summary_parts: list[str] = []
+    for sentence in sentences:
+        sentence = sentence.strip()
+        if not sentence:
+            continue
+        candidate = " ".join([*summary_parts, sentence]).strip()
+        if len(candidate) > max_chars and summary_parts:
+            break
+        summary_parts.append(sentence)
+        if len(candidate) >= 180:
+            break
+
+    summary = " ".join(summary_parts).strip() or text
+    if len(summary) <= max_chars:
+        return summary
+
+    truncated = summary[: max_chars + 1].rsplit(" ", 1)[0].rstrip(" ,;:")
+    return f"{truncated}."
+
+
+def parse_sql_values(row: str) -> list[str]:
+    text = row.strip().rstrip(",")
+    if not text.startswith("(") or not text.endswith(")"):
+        return []
+
+    values: list[str] = []
+    current: list[str] = []
+    in_string = False
+    index = 1
+    while index < len(text) - 1:
+        character = text[index]
+        if in_string:
+            if character == "'":
+                if index + 1 < len(text) - 1 and text[index + 1] == "'":
+                    current.append("'")
+                    index += 2
+                    continue
+                in_string = False
+            else:
+                current.append(character)
+        elif character == "'":
+            in_string = True
+        elif character == ",":
+            values.append("".join(current).strip())
+            current = []
+        else:
+            current.append(character)
+        index += 1
+
+    values.append("".join(current).strip())
+    return values
+
+
+def load_existing_presentation(seed_path: Path) -> dict[str, CoursePresentation]:
+    if not seed_path.exists():
+        return {}
+
+    seed = seed_path.read_text(encoding="utf-8")
+    marker = "insert into public.courses (code, title, description, studiegids_url, color, icon, ec) values"
+    if marker not in seed:
+        return {}
+
+    course_rows = seed.split(marker, 1)[1].split("on conflict (code) do update", 1)[0]
+    presentation: dict[str, CoursePresentation] = {}
+    for line in course_rows.splitlines():
+        values = parse_sql_values(line)
+        if len(values) != 7:
+            continue
+        code, _title, _description, _url, color, icon, _ec = values
+        presentation[code] = CoursePresentation(color=color, icon=icon)
+    return presentation
+
+
 def absolute_url(url: str) -> str:
     if url.startswith("http"):
         return url
@@ -329,10 +414,9 @@ def scrape_course(course: StudyCourse, use_cache: bool) -> CourseDetail:
     title = clean_text("".join(parser.title)) or course.title
     code = parser.metadata.get("Studiegidsnummer") or numeric_id
     ec = parse_int(parser.metadata.get("Credits", "")) or course.ec
-    description = " ".join(parser.description_parts[:2])
+    description = summarize_description(" ".join(parser.description_parts[:3]))
     if not description:
         description = f"Official Leiden University study guide entry for {title}."
-    description = description[:900]
     title_lower = title.lower()
     icon = "book-open"
     for keywords, icon_key in ICON_BY_KEYWORD:
@@ -448,6 +532,13 @@ def main() -> None:
                 detail.mappings[spec_code] = "core"
             else:
                 detail.mappings[spec_code] = "elective"
+
+    existing_presentation = load_existing_presentation(args.output)
+    for course in by_url.values():
+        presentation = existing_presentation.get(course.code)
+        if presentation:
+            course.color = presentation.color
+            course.icon = presentation.icon
 
     courses = sorted(by_url.values(), key=lambda course: (course.title.lower(), course.code))
     args.output.write_text(build_seed(courses), encoding="utf-8")

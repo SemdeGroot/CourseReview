@@ -62,6 +62,8 @@ export function ContactForm() {
   return (
     <form
       name="contact"
+      data-netlify="true"
+      data-netlify-honeypot="bot-field"
       onSubmit={handleSubmit}
       className="space-y-5 rounded-lg border border-border bg-card p-6"
     >

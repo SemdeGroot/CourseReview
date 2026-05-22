@@ -25,7 +25,7 @@ export function ReviewCard({ review }: { review: ReviewCardData }) {
             {review.title}
           </h3>
           <p className="mt-0.5 text-xs text-muted-foreground">
-            Anonymous student · {DATE_FMT.format(new Date(review.created_at))}
+            {DATE_FMT.format(new Date(review.created_at))}
           </p>
         </div>
         <Rating value={review.rating} size="md" />

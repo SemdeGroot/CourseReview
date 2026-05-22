@@ -1,6 +1,6 @@
 /**
  * Curated color palette for the course icon/color picker.
- * Navy variants plus a few tasteful accents. No full rainbow — keeps the
+ * Navy variants plus a few tasteful accents. No full rainbow, which keeps the
  * Leiden aesthetic coherent across course cards.
  */
 export const COURSE_COLORS = [

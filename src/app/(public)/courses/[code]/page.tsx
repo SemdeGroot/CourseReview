@@ -105,17 +105,17 @@ export default async function CourseDetailPage({
           <div className="mt-8 grid grid-cols-2 gap-x-6 gap-y-4 rounded-lg border border-border bg-card p-5 sm:grid-cols-4">
             <StatPill
               label="Rating"
-              value={course.avg_rating ? course.avg_rating.toFixed(1) : "—"}
+              value={course.avg_rating ? course.avg_rating.toFixed(1) : "N/A"}
               hint={course.avg_rating ? "/ 5" : undefined}
             />
             <StatPill
               label="Difficulty"
-              value={course.avg_difficulty ? course.avg_difficulty.toFixed(1) : "—"}
+              value={course.avg_difficulty ? course.avg_difficulty.toFixed(1) : "N/A"}
               hint={course.avg_difficulty ? "/ 5" : undefined}
             />
             <StatPill
               label="Workload"
-              value={course.avg_workload ? course.avg_workload.toFixed(1) : "—"}
+              value={course.avg_workload ? course.avg_workload.toFixed(1) : "N/A"}
               hint={course.avg_workload ? "h/wk" : undefined}
             />
             <StatPill label="Reviews" value={course.review_count} />
