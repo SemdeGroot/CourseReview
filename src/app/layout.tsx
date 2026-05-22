@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Bitter, Inter } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
@@ -23,6 +23,11 @@ export const metadata: Metadata = {
   },
   description:
     "Course reviews from verified MSc Computer Science students at Leiden University. Find out what a course is really like before you enroll.",
+};
+
+export const viewport: Viewport = {
+  colorScheme: "light",
+  themeColor: "#f5f6f8",
 };
 
 export default function RootLayout({

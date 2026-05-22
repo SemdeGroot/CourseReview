@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 type Props = {
   placeholder?: string;
   className?: string;
+  inputClassName?: string;
   paramName?: string;
   value?: string;
   onChange?: (value: string) => void;
@@ -18,6 +19,7 @@ type Props = {
 export function SearchInput({
   placeholder = "Search by title or course code...",
   className,
+  inputClassName,
   paramName = "q",
   value: controlledValue,
   onChange,
@@ -72,7 +74,7 @@ export function SearchInput({
         value={value}
         onChange={(e) => updateValue(e.target.value)}
         placeholder={placeholder}
-        className="pl-9 pr-9"
+        className={cn("pl-9 pr-9", inputClassName)}
       />
       {value && (
         <button

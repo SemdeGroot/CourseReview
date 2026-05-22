@@ -23,6 +23,7 @@ import { cn } from "@/lib/utils";
 
 const INITIAL_VISIBLE_COURSES = 20;
 const VISIBLE_COURSE_INCREMENT = 20;
+const SHOW_MORE_SCROLL_OFFSET = 128;
 const ALL_SPECIALIZATIONS = "all-specializations";
 const ALL_SEMESTERS = "all-semesters";
 
@@ -133,6 +134,7 @@ export function CourseBrowser({ courses }: Props) {
   const visibleCourses = sortedCourses.slice(0, visibleCount);
   const hasMoreCourses = visibleCourses.length < sortedCourses.length;
   const shouldUseScrollContainer = sortedCourses.length > 8;
+  const shouldScrollAfterShowMoreRef = useRef(false);
 
   useEffect(() => {
     if (highlightFromIndex === null) return;
@@ -145,17 +147,17 @@ export function CourseBrowser({ courses }: Props) {
   }, [highlightFromIndex]);
 
   useEffect(() => {
-    if (highlightFromIndex === null) return;
+    if (!shouldScrollAfterShowMoreRef.current) return;
+    shouldScrollAfterShowMoreRef.current = false;
 
-    const newCourse = Array.from(
-      listContainerRef.current?.querySelectorAll<HTMLElement>(
-        "[data-new-course='true']",
-      ) ?? [],
-    ).find((element) => element.offsetParent !== null);
-    newCourse?.scrollIntoView({ block: "nearest", behavior: "smooth" });
-  }, [highlightFromIndex, visibleCourses.length]);
+    listContainerRef.current?.scrollBy({
+      top: SHOW_MORE_SCROLL_OFFSET,
+      behavior: "smooth",
+    });
+  }, [visibleCourses.length]);
 
   function handleShowMore() {
+    shouldScrollAfterShowMoreRef.current = true;
     setHighlightFromIndex(visibleCourses.length);
     setVisibleCount((current) => current + VISIBLE_COURSE_INCREMENT);
   }
@@ -163,7 +165,12 @@ export function CourseBrowser({ courses }: Props) {
   return (
     <div className="space-y-3">
       <div className="rounded-lg border border-border bg-card p-3 shadow-sm">
-        <SearchInput className="w-full sm:max-w-md" value={query} onChange={handleQuery} />
+        <SearchInput
+          className="w-full sm:max-w-md"
+          inputClassName="h-11 md:h-9"
+          value={query}
+          onChange={handleQuery}
+        />
         <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-[minmax(220px,1fr)_180px_220px_auto]">
           <FilterSelect
             label="Specialization"
@@ -188,14 +195,14 @@ export function CourseBrowser({ courses }: Props) {
               options={COURSE_SORT_OPTIONS}
               value={sort}
               onChange={handleSort}
-              className="w-full"
+              className="h-11 w-full md:h-9"
             />
           </div>
           <div className="flex items-end">
             <Button
               type="button"
               variant="outline"
-              className="w-full"
+              className="h-11 w-full md:h-9"
               disabled={activeFilterCount === 0}
               onClick={clearFilters}
             >
@@ -252,7 +259,7 @@ function FilterSelect({
     <div className="space-y-1.5">
       <span className="text-xs font-medium text-muted-foreground">{label}</span>
       <Select value={value} onValueChange={onChange}>
-        <SelectTrigger className="w-full">
+        <SelectTrigger className="h-11 w-full md:h-9">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>{children}</SelectContent>
